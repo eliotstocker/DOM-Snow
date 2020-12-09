@@ -1,57 +1,101 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <script src="jquery-1.7.1.min.js"></script>
-    <script src="js/sweepmap.js"></script>
-    <script src="js/snow.js"></script>
+<!--    <script src="dist/index.min.js"></script>-->
     <link rel="stylesheet" type="text/css" href="css/snow.css"/>
 </head>
 <body>
 <section id="controls">
     <label for="snow">snow:</label>
-    <input id="snow" type="range" min="1" max="29" value="15"/>
+    <input id="snow" type="range" min="1" max="500" value="25"/>
     <label for="wind">wind:</label>
-    <input id="wind" type="range" min="0" max="2" value="1"/>
+    <input id="wind" type="range" min="-1" max="1" value="0" step="0.05"/>
+    <label for="velocity">velocity:</label>
+    <input id="velocity" type="range" min="0.1" max="10" value="1" step="0.1"/>
+    <label for="life">life time:</label>
+    <input id="life" type="range" min="1000" max="60000" value="10000" step="100"/>
+    <label for="compaction">compaction:</label>
+    <input id="compaction" type="range" min="0.01" max="1" value="0.7" step="0.01"/>
+    <button id="clear">Clear Fallen</button>
+    <button id="clearAll">Clear All</button>
+    <label for="compaction">Static After Landing:</label>
+    <input type="checkbox" id="staticLanded"/>
 </section>
 <section id="drawContainer">
-    <canvas id="drawArea" width="800" height="600">
-    </canvas>
     <div id="content">
-        <div id="infoBox">
-            <h1>snow</h1>
+        <div id="infoBox" class="colliders">
+            <h1>This is an element!</h1>
         </div>
+
+        <div id="aThing" class="colliders" style="background: #545d6f; width: 100px; top: 30px; position: relative;">
+            This is a Div!
+        </div>
+
+        <iframe id="frame" class="colliders" src="https://piratemedia.tv/"></iframe>
     </div>
 </section>
-<script type="text/javascript">
+<script type="module">
+    import Snow from './js/index.js';
 
-    $(document).ready(function () {
-        var snow = new Snow();
+    let windVal = 0;
+    const windProvider = () => {
+        return windVal;
+    }
 
-        var init = function () {
-            const elements = [];
+    setInterval(() => {
+        windVal += (Math.random() - 0.5) / 5;
+        if(windVal > 1) {
+            windVal = 1;
+        }
+        if(windVal < -1) {
+            windVal = -1;
+        }
+        document.querySelector('#wind').value = windVal;
+    }, 1000);
 
-            $('#content').children().each(function (i, child) {
-                const elem = $(child);
-
-                elements.push(new Rectangle(elem.position().left, elem.position().top, elem.width(), elem.height()));
-            });
-
-            snow.setDimension(new Dimension(800, 600));
-            snow.setStaticObjectRects(elements);
-
-            $('#snow').change(function () {
-                snow.generationInterval = $('#snow').val();
-            });
-
-            $('#wind').change(function () {
-                snow.wind = $('#wind').val();
-            });
-
-        };
-
-        init();
-        snow.letItSnow();
+    const snow = new Snow({
+        el: document.querySelector('#content'),
+        windProvider,
+        generationSpeed: 25,
+        flakeSize: () => Math.random() * 3,
+        flakeLife: 10000
     });
+
+    snow.setCollidableDomElements(document.querySelectorAll('.colliders'));
+
+    document.querySelector('#snow').addEventListener('change', () => {
+        snow.generationSpeed = parseInt(document.querySelector('#snow').value);
+    });
+
+    document.querySelector('#wind').addEventListener('change', () => {
+        windVal = parseFloat(document.querySelector('#wind').value);
+    });
+
+    document.querySelector('#velocity').addEventListener('change', () => {
+        snow.baseVelocity = parseFloat(document.querySelector('#velocity').value);
+    });
+
+    document.querySelector('#life').addEventListener('change', () => {
+        snow.life = parseInt(document.querySelector('#life').value);
+    });
+
+    document.querySelector('#compaction').addEventListener('change', () => {
+        snow.compaction = parseFloat(document.querySelector('#compaction').value);
+    });
+
+    document.querySelector('#clear').addEventListener('click', () => {
+        snow.clear(true);
+    });
+
+    document.querySelector('#clearAll').addEventListener('click', () => {
+        snow.clear();
+    });
+
+    document.querySelector('#staticLanded').addEventListener('change', () => {
+        snow.staticOnceLanded = document.querySelector('#staticLanded').checked;
+    });
+
+    snow.start();
 </script>
 </body>
 </html>

@@ -1,0 +1,28 @@
+{
+  "name": "snow",
+  "version": "1.0.0",
+  "description": "A snow generator",
+  "main": "js/index.js",
+  "module": "js/index.js",
+  "browser": "dist/index.min.js",
+  "type": "module",
+  "scripts": {
+    "start": "npx http-server ./",
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "snow",
+    "particles",
+    "collision"
+  ],
+  "author": "Eliot Stocker",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack-cli": "^4.2.0",
+    "eslint": "^7.14.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "webpack": "^5.9.0"
+  }
+}

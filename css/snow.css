@@ -1,13 +1,9 @@
 body {
     margin: 0;
-    background: #ffffff;
-    color: #ffffff;
-    font-family: Arial;
 }
 
-canvas {
-    z-index: 5;
-    position: absolute;
+input[type=range] {
+    width: 95px;
 }
 
 #drawContainer {
@@ -19,17 +15,18 @@ canvas {
 }
 
 #controls {
-    margin: 0 auto 0.2em;
+    margin: 0 auto;
     width: 790px;
-    background: #545d6f;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    background: #646464;
     padding: 2px 5px 2px 5px;
-    font-size: 1em;
+    font-size: 0.7em;
+    font-family: sans-serif;
+    line-height: 20px;
+    vertical-align: middle;
 }
 
 #controls input {
-    margin-right: 1em :
+    margin-right: 1em;
 }
 
 #controls h3 {
@@ -41,10 +38,8 @@ canvas {
     width: 800px;
     height: 600px;
     margin: auto;
-    background: #668ddb;
+    background: #333333;
     z-index: 1;
-    box-shadow: inset 0 0 20px #ffffff;
-    border-radius: 5px;
     position: relative;
 }
 
@@ -64,4 +59,13 @@ canvas {
 #infoBox h5 {
     margin-left: auto;
     margin-right: auto;
+}
+
+#frame {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    border: none;
+    top: 300px;
+    left: 100px;
 }
