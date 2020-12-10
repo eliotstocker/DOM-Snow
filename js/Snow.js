@@ -41,8 +41,6 @@ class Snow {
 
         el.appendChild(this.el);
         this._setPositionAndSize();
-
-        el.addEventListener('resize', this._setPositionAndSize.bind(this));
     }
 
     _generateSnow() {
@@ -144,6 +142,10 @@ class Snow {
                     this.base.getBoundingClientRect()
                 ))
         );
+    }
+
+    resize() {
+        this._setPositionAndSize();
     }
 
     _setPositionAndSize() {
