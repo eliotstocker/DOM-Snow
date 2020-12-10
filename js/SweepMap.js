@@ -1,6 +1,7 @@
 class SweepMap {
     constructor() {
         this.collisionMap = [];
+        this.ignoredCollisions = [];
         this.sliceSize = 10;
         this.width = 0;
     }
@@ -48,6 +49,11 @@ class SweepMap {
     }
 
     remove(obj) {
+        const ignoredIndex = this.ignoredCollisions.indexOf(obj.id);
+        if(ignoredIndex > -1) {
+            this.ignoredCollisions.splice(ignoredIndex, 1);
+        }
+
         for (let i = this._getLowIndex(obj); i < this._getHighIndex(obj) + 1; i += 1) {
             const arr = this.collisionMap[i] || [];
             const index = arr.indexOf(obj);
@@ -67,7 +73,19 @@ class SweepMap {
             resultList = resultList.concat(this.collisionMap[i]);
         }
 
+        if(this._checkIgnored(obj)) {
+            return [];
+        }
+
         return resultList;
+    }
+
+    _checkIgnored(obj) {
+        return this.ignoredCollisions.includes(obj.id);
+    }
+
+    ignore(flake) {
+        this.ignoredCollisions.push(flake.id);
     }
 
     setWidth(w) {

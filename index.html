@@ -16,6 +16,8 @@
     <input id="life" type="range" min="1000" max="60000" value="10000" step="100"/>
     <label for="compaction">compaction:</label>
     <input id="compaction" type="range" min="0.01" max="1" value="0.7" step="0.01"/>
+    <label for="landrate">Land Rate:</label>
+    <input id="landrate" type="range" min="0.1" max="1" value="1" step="0.05"/>
     <button id="clear">Clear Fallen</button>
     <button id="clearAll">Clear All</button>
     <label for="compaction">Static After Landing:</label>
@@ -58,7 +60,7 @@
         windProvider,
         generationSpeed: 25,
         flakeSize: () => Math.random() * 3,
-        flakeLife: 10000
+        flakeLife: 10000,
     });
 
     snow.setCollidableDomElements(document.querySelectorAll('.colliders'));
@@ -82,6 +84,12 @@
     document.querySelector('#compaction').addEventListener('change', () => {
         snow.compaction = parseFloat(document.querySelector('#compaction').value);
     });
+
+    document.querySelector('#landrate').addEventListener('change', () => {
+        console.log(document.querySelector('#landrate').value);
+        snow.landRate = parseFloat(document.querySelector('#landrate').value);
+    });
+
 
     document.querySelector('#clear').addEventListener('click', () => {
         snow.clear(true);

@@ -12,6 +12,7 @@ class Snow {
         flakeSize = 2,
         flakeLife = 30000,
         flakeCompaction = 0.7,
+        flakesLand = 1,
         staticOnceLanded = false,
         landedFlakesMelt = undefined
     }) {
@@ -31,6 +32,7 @@ class Snow {
             width: 0,
             height: 0
         };
+        this.landRate = flakesLand;
         this.size = flakeSize;
         this.life = flakeLife;
         this.compaction = flakeCompaction;
@@ -43,26 +45,34 @@ class Snow {
         this._setPositionAndSize();
     }
 
+    _inheritFlakeOptions() {
+        const allowedOptions = ['life', 'size', 'compaction', 'windProvider', 'baseVelocity'];
+        const opts = Object.entries(this).reduce((acc, [key, value]) => {
+            if(allowedOptions.includes(key)) {
+                return {...acc, [key]: value}
+            }
+            return acc;
+        }, {});
+        return {
+            ...opts,
+            width: this.dimension.width
+        }
+    }
+
     _generateSnow() {
         let gSpeed = this.generationSpeed;
         while (gSpeed > 50) {
-            this.fallingFlakes.push(new Flake({
-                width: this.dimension.width,
-                ...this
-            }));
+            this.fallingFlakes.push(new Flake(this._inheritFlakeOptions()));
             gSpeed -= 50;
         }
         if (new Date().getMilliseconds() % (51 - this.generationSpeed) === 0) {
-            this.fallingFlakes.push(new Flake({
-                width: this.dimension.width,
-                ...this
-            }));
+            this.fallingFlakes.push(new Flake(this._inheritFlakeOptions()));
         }
     }
 
     _testCollision(flake) {
         const targets = this.collisionMap.query(flake);
-        return flake.onTopOfOthers(targets);
+        return flake.onTopOfOthers(targets) && targets;
     }
 
     start() {
@@ -92,19 +102,31 @@ class Snow {
             if (flake.hasMelted()) {
                 // Remove if the flake has melted
                 this.fallingFlakes.splice(i, 1);
-            } else if (this._testCollision(flake)) {
-                // Check if flake has hit any colliders
-                this.fallenFlakes.push(flake);
-                this.fallingFlakes.splice(i, 1);
-                this.collisionMap.add(flake);
             } else {
-                // Cause flake to descend
-                flake.descend();
-                if (flake.y > this.dimension.height
-                    || flake.x < 0
-                    || flake.x > this.dimension.width) {
-                    // Remove any occluded flakes
+                const collision = this._testCollision(flake);
+
+                let stopped = false;
+                if(collision) {
+                    if(Math.random() >  this.landRate) {
+                        this.collisionMap.ignore(flake);
+                    } else {
+                        stopped = true;
+                    }
+                }
+
+                if(stopped) {
+                    this.fallenFlakes.push(flake);
                     this.fallingFlakes.splice(i, 1);
+                    this.collisionMap.add(flake);
+                } else {
+                    // Cause flake to descend
+                    flake.descend();
+                    if (flake.y > this.dimension.height
+                        || flake.x < 0
+                        || flake.x > this.dimension.width) {
+                        // Remove any occluded flakes
+                        this.fallingFlakes.splice(i, 1);
+                    }
                 }
             }
         });
