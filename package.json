@@ -1,6 +1,6 @@
 {
   "name": "dom-snow",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A snow generator",
   "main": "dist/index.min.js",
   "module": "js/index.js",
