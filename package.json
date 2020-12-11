@@ -2,7 +2,7 @@
   "name": "dom-snow",
   "version": "1.1.0",
   "description": "A snow generator",
-  "main": "js/index.js",
+  "main": "dist/index.min.js",
   "module": "js/index.js",
   "browser": "dist/index.min.js",
   "type": "module",

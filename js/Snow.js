@@ -107,7 +107,7 @@ class Snow {
 
                 let stopped = false;
                 if(collision) {
-                    if(Math.random() >  this.landRate) {
+                    if(Math.random() > this.landRate) {
                         this.collisionMap.ignore(flake);
                     } else {
                         stopped = true;
