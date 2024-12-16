@@ -1,12 +1,24 @@
+import objectHash from 'object-hash';
+
 class View {
     constructor({
-        canvas
+        fallingCanvas,
+        fallenCanvas,
+        fallenFullUpdateFrequency = 0.2,
     }) {
-        this.canvas = canvas;
+        this.fallingCanvas = fallingCanvas;
+        this.fallenCanvas = fallenCanvas;
+        this.fallenFullUpdateFrequency = fallenFullUpdateFrequency;
+        this.currentDrawFrame = 0;
+
         this.buffer = document.createElement('canvas');
-        this.ctx = this.canvas.getContext('2d');
+        this.fallingCtx = this.fallingCanvas.getContext('2d');
+        this.fallenCtx = this.fallenCanvas.getContext('2d');
+
         this.buffer.width = 6;
         this.buffer.height = 6;
+
+        this.fallenFlakesHash = null;
 
         const bufferCanvas = this.buffer.getContext('2d');
         View.drawFlake(bufferCanvas);
@@ -25,28 +37,70 @@ class View {
         surface.fill();
     }
 
-    draw(flakes) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        flakes.forEach((flake) => {
-            this.ctx.drawImage(
-                this.buffer,
-                0,
-                0,
-                6,
-                6,
-                flake.x - 3,
-                flake.y - 3,
-                flake.size,
-                flake.size
-            );
-        });
+    draw(flakes, falling  = true) {
+        this.currentDrawFrame++;
+        if(this.currentDrawFrame > 30) {
+            this.currentDrawFrame = 0;
+        }
+
+        if(!falling) {
+            const newFlakes = flakes.filter(flake => flake.isNew);
+            const oldFlakes = flakes.filter(flake => !flake.isNew);
+
+            //console.log(oldFlakes.length, newFlakes.length);
+
+            if(newFlakes.length > 0) {
+                flakes.forEach((flake) => {
+                    this.__drawFlake(flake, this.fallenCtx);
+                    flake.isNew = false;
+                });
+            }
+
+            if(objectHash(oldFlakes) == this.fallenFlakesHash) {
+                return; //no need to draw
+            }
+
+            if(this.currentDrawFrame % (1 / this.fallenFullUpdateFrequency) != 0) {
+                
+                return // skip full update
+            }
+        }
+
+        const ctx = falling ? this.fallingCtx : this.fallenCtx;
+
+        ctx.clearRect(0, 0, this.fallingCanvas.width, this.fallingCanvas.height);
+        flakes.forEach((flake) => this.__drawFlake(flake, ctx));
+
+        if(!falling) {
+            const oldFlakes = flakes.filter(flake => !flake.isNew);
+            this.fallenFlakesHash = objectHash(oldFlakes);
+        }
+    }
+
+    __drawFlake(flake, ctx) {
+        ctx.drawImage(
+            this.buffer,
+            0,
+            0,
+            6,
+            6,
+            flake.x - 3,
+            flake.y - 3,
+            flake.size,
+            flake.size
+        );
     }
 
     setDimension(dimension) {
-        this.ctx.canvas.width = dimension.width;
-        this.ctx.canvas.height = dimension.height;
-        this.ctx.fillStyle = 'rgb(255,255,255)';
-        this.ctx.strokeStyle = 'rgb(255,255,255)';
+        this.fallingCtx.canvas.width = dimension.width;
+        this.fallingCtx.canvas.height = dimension.height;
+        this.fallingCtx.fillStyle = 'rgb(255,255,255)';
+        this.fallingCtx.strokeStyle = 'rgb(255,255,255)';
+
+        this.fallenCtx.canvas.width = dimension.width;
+        this.fallenCtx.canvas.height = dimension.height;
+        this.fallenCtx.fillStyle = 'rgb(255,255,255)';
+        this.fallenCtx.strokeStyle = 'rgb(255,255,255)';
     }
 }
 

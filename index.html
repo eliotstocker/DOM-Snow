@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<!--    <script src="dist/index.min.js"></script>-->
+    <script type="module" src="js/index.js"></script>
     <link rel="stylesheet" type="text/css" href="css/demo.css"/>
 </head>
 <body>
@@ -36,73 +36,73 @@
         <iframe id="frame" class="colliders" src="https://piratemedia.tv/"></iframe>
     </div>
 </section>
-<script type="module">
-    import Snow from './js/index.js';
-
-    let windVal = 0;
-    const windProvider = () => {
-        return windVal;
-    }
-
-    setInterval(() => {
-        windVal += (Math.random() - 0.5) / 5;
-        if(windVal > 1) {
-            windVal = 1;
+<script>
+    window.onload = () => {
+        let windVal = 0;
+        const windProvider = () => {
+            return windVal;
         }
-        if(windVal < -1) {
-            windVal = -1;
-        }
-        document.querySelector('#wind').value = windVal;
-    }, 1000);
 
-    const snow = new Snow({
-        el: document.querySelector('#content'),
-        windProvider,
-        generationSpeed: 25,
-        flakeSize: () => Math.random() * 3,
-        flakeLife: 10000,
-    });
+        setInterval(() => {
+            windVal += (Math.random() - 0.5) / 5;
+            if(windVal > 1) {
+                windVal = 1;
+            }
+            if(windVal < -1) {
+                windVal = -1;
+            }
+            document.querySelector('#wind').value = windVal;
+        }, 1000);
 
-    snow.setCollidableDomElements(document.querySelectorAll('.colliders'));
+        const snow = new window.Snow({
+            el: document.querySelector('#content'),
+            windProvider,
+            generationSpeed: 25,
+            flakeSize: () => Math.random() * 3,
+            flakeLife: 10000,
+        });
 
-    document.querySelector('#snow').addEventListener('change', () => {
-        snow.generationSpeed = parseInt(document.querySelector('#snow').value);
-    });
+        snow.setCollidableDomElements(document.querySelectorAll('.colliders'));
 
-    document.querySelector('#wind').addEventListener('change', () => {
-        windVal = parseFloat(document.querySelector('#wind').value);
-    });
+        document.querySelector('#snow').addEventListener('change', () => {
+            snow.generationSpeed = parseInt(document.querySelector('#snow').value);
+        });
 
-    document.querySelector('#velocity').addEventListener('change', () => {
-        snow.baseVelocity = parseFloat(document.querySelector('#velocity').value);
-    });
+        document.querySelector('#wind').addEventListener('change', () => {
+            windVal = parseFloat(document.querySelector('#wind').value);
+        });
 
-    document.querySelector('#life').addEventListener('change', () => {
-        snow.life = parseInt(document.querySelector('#life').value);
-    });
+        document.querySelector('#velocity').addEventListener('change', () => {
+            snow.baseVelocity = parseFloat(document.querySelector('#velocity').value);
+        });
 
-    document.querySelector('#compaction').addEventListener('change', () => {
-        snow.compaction = parseFloat(document.querySelector('#compaction').value);
-    });
+        document.querySelector('#life').addEventListener('change', () => {
+            snow.life = parseInt(document.querySelector('#life').value);
+        });
 
-    document.querySelector('#landrate').addEventListener('change', () => {
-        snow.landRate = parseFloat(document.querySelector('#landrate').value);
-    });
+        document.querySelector('#compaction').addEventListener('change', () => {
+            snow.compaction = parseFloat(document.querySelector('#compaction').value);
+        });
+
+        document.querySelector('#landrate').addEventListener('change', () => {
+            snow.landRate = parseFloat(document.querySelector('#landrate').value);
+        });
 
 
-    document.querySelector('#clear').addEventListener('click', () => {
-        snow.clear(true);
-    });
+        document.querySelector('#clear').addEventListener('click', () => {
+            snow.clear(true);
+        });
 
-    document.querySelector('#clearAll').addEventListener('click', () => {
-        snow.clear();
-    });
+        document.querySelector('#clearAll').addEventListener('click', () => {
+            snow.clear();
+        });
 
-    document.querySelector('#staticLanded').addEventListener('change', () => {
-        snow.staticOnceLanded = document.querySelector('#staticLanded').checked;
-    });
+        document.querySelector('#staticLanded').addEventListener('change', () => {
+            snow.staticOnceLanded = document.querySelector('#staticLanded').checked;
+        });
 
-    snow.start();
+        snow.start();
+    };
 </script>
 </body>
 </html>

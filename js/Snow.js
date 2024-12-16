@@ -17,7 +17,8 @@ class Snow {
         landedFlakesMelt = undefined
     }) {
         this.base = el;
-        this.el = document.createElement('canvas');
+        this.fallingCanvas = document.createElement('canvas');
+        this.fallenCanvas = document.createElement('canvas');
         this.fallingFlakes = [];
         this.fallenFlakes = [];
         this.staticOnceLanded = staticOnceLanded;
@@ -26,7 +27,8 @@ class Snow {
         this.baseVelocity = velocity;
         this.staticObjectRects = [];
         this.view = new View({
-            canvas: this.el
+            fallingCanvas: this.fallingCanvas,
+            fallenCanvas: this.fallenCanvas
         });
         this.dimension = {
             width: 0,
@@ -41,7 +43,8 @@ class Snow {
 
         this.collisionMap = new SweepMap();
 
-        el.appendChild(this.el);
+        el.appendChild(this.fallingCanvas);
+        el.appendChild(this.fallenCanvas);
         this._setPositionAndSize();
     }
 
@@ -115,9 +118,12 @@ class Snow {
                 }
 
                 if(stopped) {
-                    this.fallenFlakes.push(flake);
-                    this.fallingFlakes.splice(i, 1);
-                    this.collisionMap.add(flake);
+                    flake.isNew = true;
+                    if(flake.requiresDrawing()) {
+                        this.fallenFlakes.push(flake);
+                        this.fallingFlakes.splice(i, 1);
+                        this.collisionMap.add(flake);
+                    }
                 } else {
                     // Cause flake to descend
                     flake.descend();
@@ -144,7 +150,8 @@ class Snow {
             }
         });
 
-        this.view.draw(this.fallingFlakes.concat(this.fallenFlakes));
+        this.view.draw(this.fallingFlakes);
+        this.view.draw(this.fallenFlakes, false);
 
         this.loopContext = requestAnimationFrame(() => {
             this.loop();
@@ -174,14 +181,17 @@ class Snow {
         const width = this.base.offsetWidth;
         const height = this.base.offsetHeight;
 
-        this.el.style.position = 'absolute';
-        this.el.style.top = '0';
-        this.el.style.left = '0';
-        this.el.style.zIndex = '99999';
-        this.el.style.pointerEvents = 'none';
+        [this.fallingCanvas, this.fallenCanvas].forEach(item => {
+            item.style.position = 'absolute';
+            item.style.top = '0';
+            item.style.left = '0';
+            item.style.zIndex = '99999';
+            item.style.pointerEvents = 'none';
+    
+            item.width = width;
+            item.height = height;
+        });
 
-        this.el.width = width;
-        this.el.height = height;
 
         this.clear(true);
 

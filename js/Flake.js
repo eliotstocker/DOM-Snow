@@ -43,13 +43,20 @@ class Flake extends Rectangle {
             if (this.onTopOf(other)) {
                 // Allow Flakes to compact
                 if (other.constructor === Flake) {
-                    return Math.random() < 1 - this.compaction;
+                    if(Math.random() < 1 - this.compaction) {
+                        this.compacted = true;
+                        return true;
+                    }
                 }
                 return true;
             }
         }
 
         return false;
+    }
+
+    requiresDrawing() {
+        return !this.compacted;
     }
 
     setVelocity(velocity) {
